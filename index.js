@@ -15,7 +15,8 @@ app.set('views', path.join(__dirname, 'view'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // MongoDB Connection URI and Database Name
-const uri = "mongodb://localhost:27017"; // Replace with your MongoDB connection string
+// const uri = "mongodb://localhost:27017"; // Replace with your MongoDB connection string
+const uri = "mongodb+srv://arunm244224:tY5CMLK8t5gp0cYk@cluster0.b7r9j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const dbName = "projectsDB";
 
 
