@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .project {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin: 10px auto;
+      width: 50%;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .project h2 {
+      margin: 0;
+      color: #007BFF;
+    }
+    .project p {
+      color: #555;
+    }
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #007BFF;
+      text-decoration: underline;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 {
+      margin: 0;
+    }
+    .close {
+      font-size: 30px;
+      color: #000;
+      cursor: pointer;
+    }
+    form {
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button[type="submit"] {
+      width: 100%;
+      background-color: #28a745;
+    }
+    button[type="submit"]:hover {
+      background-color: #218838;
+    }
+
+
+
+
+    /* filter */
+    .filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-form label {
+  font-weight: bold;
+}
+
+#label-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#label-buttons label {
+  margin: 5px;
+}
+
+
+.filter-form {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.filter-section {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#label-buttons label {
+  margin-right: 10px;
+}
+
+button[type="submit"] {
+  padding: 0.7rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+
+  </style>
+
+
+
+
+
+</head>
+<body>
+  <h1>Project Details</h1>
+  <div class="project">
+    <h2><%= project.name %></h2>
+    <p><strong>Description:</strong> <%= project.description %></p>
+    <p><strong>Author:</strong> <%= project.author %></p>
+    <p><strong>Created At:</strong> <%= new Date(project.createdAt).toLocaleString() %></p>
+  </div>
+
+
+  
+<!-- issue list render -->
+  <h2>Issues</h2>
+  <% if (issues && issues.length > 0) { %>
+    <% issues.forEach((issue) => { %>
+      <div class="project">
+        
+        <p><strong>Title:</strong><%= issue.title %></p>
+        <p><strong>Description:</strong> <%= issue.description %></p>
+
+        
+       
+        <p><strong>Labels:</strong> 
+          <% if (Array.isArray(issue.labels) && issue.labels.length > 0) { %>
+            <% issue.labels.forEach((label, index) => { %>
+              <span><%= label %></span>
+              <% if (index !== issue.labels.length - 1) { %>, <% } %>
+            <% }); %>
+          <% } else { %>
+            <span>No labels available</span>
+          <% } %>
+        </p>
+
+
+
+        <p><strong>Author:</strong> <%= issue.author %></p>
+        <p><strong>Created At:</strong> <%= new Date(issue.createdAt).toLocaleString() %></p>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <p>No issues found for this project.</p>
+  <% } %>
+  
+
+
+
+
+
+
+  <button onclick="openModal()">Create Issue</button>
+  <a href="/">Back to Home</a>
+
+
+  <!-- Modal -->
+<div class="modal" id="createIssueModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create a New Issue</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <form action="/issues/create" method="post">
+        <input type="hidden" name="projectId" value="<%= project._id %>">
+  
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required>
+  
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+  
+        <label for="labels">Labels</label>
+        <div id="label-buttons"> -->
+          <!-- Predefined buttons for labels -->
+           <button type="button" class="label-btn" data-label="Bug">Bug</button>
+          <button type="button" class="label-btn" data-label="HTML Error">HTML Error</button>
+          <button type="button" class="label-btn" data-label="CSS Error">CSS Error</button>
+          <button type="button" class="label-btn" data-label="Server Error">Server Error</button>
+          <button type="button" class="label-btn" data-label="Routes Failed">Routes Failed</button>
+          <button type="button" class="label-btn" data-label="DB Failed">DB Failed</button>
+        </div>
+         
+        <!-- Hidden input to store the selected labels -->
+        <input type="hidden" id="selected-labels" name="labels" required>
+        
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" required>
+  
+        <button type="submit">Submit</button>
+      </form> 
+    </div>
+  </div>
+
+
+
+  
+
+  <form action="/project/<%= project._id %>" method="GET" class="filter-form">
+  
+    <!-- Filter by Title -->
+    <div class="filter-section">
+      <label for="title"><strong>Filter by Title:</strong></label>
+      <input 
+        type="text" 
+        name="title" 
+        id="title" 
+        placeholder="Enter title" 
+        value="<%= title || '' %>"
+      >
+    </div>
+  
+    <!-- Filter by Description -->
+    <div class="filter-section">
+      <label for="description"><strong>Filter by Description:</strong></label>
+      <input 
+        type="text" 
+        name="description" 
+        id="description" 
+        placeholder="Enter description" 
+        value="<%= description || '' %>"
+      >
+    </div>
+  
+    <!-- Filter by Author -->
+    <div class="filter-section">
+      <label for="author"><strong>Filter by Author:</strong></label>
+      <input 
+        type="text" 
+        name="author" 
+        id="author" 
+        placeholder="Enter author name" 
+        value="<%= author || '' %>"
+      >
+    </div>
+  
+    <!-- Filter by Labels -->
+    <div class="filter-section">
+      <label for="labels"><strong>Filter by Labels:</strong></label>
+      <div id="label-buttons">
+        <% allLabels.forEach(function(label) { %>
+          <label>
+            <input 
+              type="checkbox" 
+              name="labels" 
+              value="<%= label %>" 
+              <% if (labels && labels.includes(label)) { %>checked<% } %>
+            >
+            <%= label %>
+          </label>
+        <% }); %>
+      </div>
+    </div>
+  
+    <button type="submit">Apply Filters</button>
+  </form>
+  
+  
+  
+
+
+
+
+
+
+
+  <script>
+ document.addEventListener('DOMContentLoaded', () => {  
+const labelButtons = document.querySelectorAll('.label-btn');
+const selectedLabelsInput = document.getElementById('selected-labels');
+let selectedLabels = []; // Array to store selected labels
+
+labelButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const label = button.dataset.label;
+    console.log('Clicked label:', label); // Debugging line
+
+    // Toggle label selection
+    if (selectedLabels.includes(label)) {
+      // Remove label if already selected
+      selectedLabels = selectedLabels.filter(l => l !== label);
+      button.style.backgroundColor = ''; // Reset button style
+      button.style.color = ''; // Reset text color
+    } else {
+      // Add label if not already selected
+      selectedLabels.push(label);
+      button.style.backgroundColor = '#007BFF'; // Highlight selected
+      button.style.color = 'white'; // Update text color for better visibility
+    }
+     
+
+    console.log('Selected labels:', selectedLabels); // Debugging line
+    // Update the hidden input value
+    selectedLabelsInput.value = selectedLabels.join(',');
+  });
+});
+
+// Ensure the user selects at least one label before submitting
+document.querySelector('form').addEventListener('submit', (e) => {
+  if (selectedLabels.length === 0) {
+    e.preventDefault();
+    alert('Please select at least one label.');
+  }
+});
+});
+  </script>
+  
+
+
+
+
+  <script>
+    const modal = document.getElementById('createIssueModal');
+
+    function openModal() {
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    // Close modal if clicking outside the content
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    };
+  </script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.querySelector('.filter-form');
+    const issueContainers = document.querySelectorAll('.project');
+  
+    filterForm.addEventListener('input', () => {
+      const author = document.querySelector('#author').value.toLowerCase();
+      const title = document.querySelector('#title').value.toLowerCase();
+      const description = document.querySelector('#description').value.toLowerCase();
+      const selectedLabels = Array.from(document.querySelectorAll('input[name="labels"]:checked')).map(cb => cb.value);
+  
+      issueContainers.forEach(issue => {
+        const issueTitle = issue.querySelector('p:nth-child(1)').textContent.toLowerCase();
+        const issueDescription = issue.querySelector('p:nth-child(2)').textContent.toLowerCase();
+        const issueAuthor = issue.querySelector('p:nth-child(4)').textContent.toLowerCase();
+        const issueLabels = Array.from(issue.querySelectorAll('span')).map(span => span.textContent.toLowerCase());
+  
+        const matchesAuthor = author === '' || issueAuthor.includes(author);
+        const matchesTitle = title === '' || issueTitle.includes(title);
+        const matchesDescription = description === '' || issueDescription.includes(description);
+        const matchesLabels = selectedLabels.length === 0 || selectedLabels.some(label => issueLabels.includes(label));
+  
+        issue.style.display = matchesAuthor && matchesTitle && matchesDescription && matchesLabels ? 'block' : 'none';
+      });
+    });
+  });
+  </script>
+  
+
+   
+</body>
+</html>
+
+
